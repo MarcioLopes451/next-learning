@@ -10,6 +10,7 @@ import {signIn,signOut,useSession,getProviders } from 'next-auth/react';
 export default function Nav() {
     const isUserLoggedIn = true;
     const [providers, setProviders] = useState(null);
+    const [toggle, setToggle] = useState(false)
 
     useEffect(() => {
         (async () => {
@@ -29,7 +30,7 @@ export default function Nav() {
             <p className='logo_text'>Promptopia</p>
         </Link>
 
-        { /*mobile nav */}
+        { /* desktop nav */}
         <div className='sm:flex hidden'>
             {isUserLoggedIn ? 
             <div className='flex gap-3 md:gap-5'>
@@ -61,6 +62,56 @@ export default function Nav() {
                </button>
             ))}
             </>}
+        </div>
+
+        {/* mobile nav */}
+        <div className='sm:hidden flex relative'>
+            {isUserLoggedIn ? 
+            <div className='flex'>
+                 <Image 
+                    src='/assets/images/logo.svg'
+                    alt='profile'
+                    className='rounded-full'
+                    width={37}
+                    height={37}
+                    onClick={() => setToggle((p) => !p)}
+                    />
+                    {toggle && (
+                        <div className='dropdown'>
+                            <Link
+                            href='/profile'
+                            className='dropdown_link'
+                            onClick={() => setToggle(false)}>
+                                My Profile
+                            </Link>
+                            <Link
+                            href='/create-prompt'
+                            className='dropdown_link'
+                            onClick={() => setToggle(false)}>
+                                Create Prompt
+                            </Link>
+                            <button 
+                            type='button'
+                            className='mt-5 w-full black_btn'
+                            onClick={() => {setToggle(false);
+                            signOut()}}>
+                                Sign Out
+                            </button>
+                        </div>
+                    )}
+            </div> :  <>
+            {providers && 
+            Object.values(providers).map((provider: any) => (
+               <button
+               type='button'
+               onClick={() => signIn(provider.id)}
+               className='black_btn'
+               key={provider.name}>
+                Sign in
+               </button>
+            ))}
+            </>}
+
         </div>
     </nav>
   )
